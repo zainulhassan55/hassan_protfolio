@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="900" viewBox="0 0 720 900">
+  <defs>
+    <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7eb6e0"/>
+      <stop offset="100%" stop-color="#4a8fc4"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0c7a8"/>
+      <stop offset="100%" stop-color="#d9a888"/>
+    </linearGradient>
+  </defs>
+  <!-- Soft silhouette placeholder  replace with public/images/portrait.png -->
+  <ellipse cx="360" cy="860" rx="260" ry="40" fill="#1e3a5f" opacity="0.08"/>
+  <path d="M180 900 C180 620 220 520 360 520 C500 520 540 620 540 900 Z" fill="url(#shirt)"/>
+  <ellipse cx="360" cy="300" rx="128" ry="150" fill="url(#skin)"/>
+  <path d="M230 250 C250 120 470 120 490 250 C480 210 420 170 360 168 C300 170 240 210 230 250 Z" fill="#2c3e50"/>
+  <path d="M255 290 C290 250 430 250 465 290 C450 265 400 255 360 255 C320 255 270 265 255 290 Z" fill="#1a2332"/>
+  <rect x="210" y="620" width="300" height="48" rx="8" fill="#ffffff" opacity="0.9"/>
+  <text x="360" y="652" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="600" fill="#1e3a5f">Add your photo</text>
+  <text x="360" y="780" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" fill="#5a6b7d">Replace /images/portrait.png</text>
+</svg>
