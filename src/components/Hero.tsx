@@ -1,10 +1,22 @@
-import { site } from '../data/content'
+import { usePortfolio } from '../context/PortfolioContext'
 import { Portrait } from './Portrait'
+import { HeroTechVisual } from './HeroTechVisual'
+
+const domains = [
+  { label: 'Artificial Intelligence', short: 'AI' },
+  { label: 'Cybersecurity', short: 'Security' },
+  { label: 'Healthcare Tech', short: 'Healthcare' },
+]
 
 export function Hero() {
+  const { data } = usePortfolio()
+  const { site } = data
+
   return (
-    <section id="top" className="hero-panel border-b border-[var(--color-line)]">
-      <div className="container-wide grid items-center gap-10 px-[clamp(1.25rem,4vw,2.75rem)] pb-16 pt-28 md:grid-cols-[1.08fr_0.92fr] md:gap-12 md:pb-20 md:pt-32 lg:gap-16">
+    <section id="top" className="hero-panel relative overflow-hidden border-b border-[var(--color-line)]">
+      <HeroTechVisual />
+
+      <div className="container-wide relative z-10 grid items-center gap-10 px-[clamp(1.25rem,4vw,2.75rem)] pb-16 pt-28 md:grid-cols-[1.08fr_0.92fr] md:gap-12 md:pb-20 md:pt-32 lg:gap-16">
         <div className="order-2 md:order-1">
           <p
             className="animate-fade-up section-label"
@@ -34,31 +46,49 @@ export function Hero() {
             {site.tagline}
           </p>
 
-          <div
-            className="animate-fade-up mt-9 flex flex-wrap gap-3"
+          <ul
+            className="animate-fade-up mt-6 flex flex-wrap gap-2"
             style={{ animationDelay: '0.28s' }}
           >
-            <a href="#work" className="btn-primary">
+            {domains.map((domain, index) => (
+              <li
+                key={domain.short}
+                className="domain-chip"
+                style={{ animationDelay: `${0.35 + index * 0.08}s` }}
+              >
+                <span className="domain-chip-dot" aria-hidden="true" />
+                {domain.label}
+              </li>
+            ))}
+          </ul>
+
+          <div
+            className="animate-fade-up mt-9 flex flex-wrap gap-3"
+            style={{ animationDelay: '0.42s' }}
+          >
+            <a href="#work" className="btn btn-primary">
               View Projects
+              <span aria-hidden="true">→</span>
             </a>
-            <a href="#contact" className="btn-secondary">
-              Contact Me
+            <a href="#research" className="btn btn-secondary">
+              View Research
             </a>
           </div>
 
           <p
             className="animate-fade-up mt-8 text-sm tracking-wide text-[var(--color-text-faint)]"
-            style={{ animationDelay: '0.34s' }}
+            style={{ animationDelay: '0.48s' }}
           >
             Based at {site.location}
           </p>
         </div>
 
         <div
-          className="animate-fade-up order-1 flex justify-center md:order-2 md:justify-end"
+          className="animate-fade-up order-1 relative flex justify-center md:order-2 md:justify-end"
           style={{ animationDelay: '0.12s' }}
         >
-          <div className="w-[min(72vw,19.5rem)] sm:w-[21.5rem] lg:w-[23.5rem]">
+          <div className="portrait-orbit absolute inset-0 m-auto hidden h-[88%] w-[88%] max-w-[24rem] md:block" aria-hidden="true" />
+          <div className="relative w-[min(72vw,19.5rem)] sm:w-[21.5rem] lg:w-[23.5rem]">
             <Portrait
               src={site.portrait}
               fallback={site.portraitFallback}

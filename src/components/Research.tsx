@@ -1,7 +1,9 @@
-import { research, site } from '../data/content'
+import { usePortfolio } from '../context/PortfolioContext'
 import { useReveal } from '../hooks/useReveal'
 
 export function Research() {
+  const { data } = usePortfolio()
+  const { research, site } = data
   const titleRef = useReveal<HTMLHeadingElement>()
   const listRef = useReveal<HTMLUListElement>()
 
@@ -15,7 +17,8 @@ export function Research() {
               Research
             </h2>
             <p className="section-intro">
-              Ongoing work as a Research Assistant at CCRI, focused on AI and cybersecurity.
+              Ongoing work as a Research Assistant at CCRI across AI, cybersecurity, and healthcare
+              technology.
             </p>
           </div>
           <a
@@ -24,7 +27,8 @@ export function Research() {
             rel="noreferrer"
             className="link-accent shrink-0 text-sm"
           >
-            aicybersecuritycenter.com ↗
+            Visit CCRI
+            <span aria-hidden="true">↗</span>
           </a>
         </div>
 
@@ -32,11 +36,11 @@ export function Research() {
           {research.map((item) => (
             <li
               key={item.id}
-              className="grid gap-3 border-b border-[var(--color-line)] py-7 md:grid-cols-[11rem_1fr] md:gap-10"
+              className="timeline-row grid gap-3 border-b border-[var(--color-line)] py-7 md:grid-cols-[11rem_1fr] md:gap-10"
             >
-              <span className="text-sm font-semibold tracking-wide text-[var(--color-accent)]">
-                {item.status}
-              </span>
+              <div>
+                <span className="status-pill">{item.status}</span>
+              </div>
               <div>
                 <h3 className="text-[1.15rem] text-balance md:text-[1.25rem]">{item.title}</h3>
                 {item.venue && (

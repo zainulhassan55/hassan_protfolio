@@ -1,60 +1,35 @@
-export type TimelineItem = {
-  id: string
-  period: string
-  title: string
-  org: string
-  detail: string
-}
+import type {
+  AboutContent,
+  Conference,
+  ContactContent,
+  Highlight,
+  PortfolioData,
+  Project,
+  ResearchItem,
+  SiteSettings,
+  SkillGroup,
+  TimelineItem,
+} from '../types/portfolio'
 
-export type Project = {
-  id: string
-  title: string
-  role: string
-  stack: string[]
-  blurb: string
-  year: string
-  href?: string
-}
+export type {
+  AboutContent,
+  Conference,
+  ContactContent,
+  Highlight,
+  PortfolioData,
+  Project,
+  ResearchItem,
+  SiteSettings,
+  SkillGroup,
+  TimelineItem,
+} from '../types/portfolio'
 
-export type ResearchItem = {
-  id: string
-  title: string
-  status: string
-  venue?: string
-  blurb: string
-}
-
-export type Conference = {
-  id: string
-  title: string
-  event: string
-  role: 'Speaker' | 'Presenter' | 'Attendee' | 'Poster'
-  location: string
-  date: string
-  year: string
-  url?: string
-  note?: string
-}
-
-export type SkillGroup = {
-  id: string
-  label: string
-  items: string[]
-}
-
-export type Highlight = {
-  id: string
-  title: string
-  detail: string
-  icon: 'cap' | 'lab' | 'bulb'
-}
-
-export const site = {
+export const site: SiteSettings = {
   name: 'Zain Ul Hassan',
   shortName: 'ZUH',
-  headline: 'Software Engineer & Research Assistant',
+  headline: 'CS Researcher in AI, Cybersecurity & Healthcare',
   tagline:
-    'Building reliable full-stack web systems and contributing to AI and cybersecurity research at Asia University, Taiwan.',
+    'Computer Science graduate student and Research Assistant building secure intelligent systems for real-world healthcare and cyber defense challenges.',
   location: 'Asia University, Taiwan',
   role: 'MERN Developer · Research Assistant · CCRI',
   ccriUrl: 'https://aicybersecuritycenter.com',
@@ -70,8 +45,8 @@ export const navLinks = [
   { label: 'Contact', href: '#contact' },
 ]
 
-export const about = {
-  lead: 'I design and build full-stack web applications, then bring that engineering rigor into AI and cybersecurity research.',
+export const about: AboutContent = {
+  lead: 'I build full-stack systems and research secure AI for cybersecurity and healthcare applications.',
   body: 'After completing my BS in Computer Science at Islamia College University Peshawar, I spent over a year and a half as a MERN Stack Developer at K2X TECH. I am now pursuing a Master’s in Computer Science and Information Engineering at Asia University, Taiwan, and serving as a Research Assistant at the International Center for AI and Cyber Security Research and Innovations (CCRI).',
 }
 
@@ -85,7 +60,7 @@ export const highlights: Highlight[] = [
   {
     id: 'h2',
     title: 'Research Interests',
-    detail: 'AI, cybersecurity, and secure intelligent systems',
+    detail: 'AI, cybersecurity, and healthcare technology',
     icon: 'lab',
   },
   {
@@ -174,24 +149,25 @@ export const research: ResearchItem[] = [
     id: 'r1',
     title: 'Adversarial Robustness in Lightweight Vision Models',
     status: 'In progress',
-    venue: 'CCRI research track',
+    venue: 'CCRI · AI & Cybersecurity',
     blurb:
-      'Exploring efficient defense strategies for edge-deployable CNN architectures under common attack settings.',
+      'Efficient defense strategies for edge-deployable CNN architectures under common adversarial attack settings.',
   },
   {
     id: 'r2',
     title: 'Threat Signal Correlation for IoT Telemetry',
     status: 'Manuscript in prep',
-    venue: 'Working paper',
+    venue: 'CCRI · Cybersecurity',
     blurb:
       'Pipeline design for correlating anomalous device signals with known cybersecurity threat patterns.',
   },
   {
     id: 'r3',
-    title: 'Secure Federated Learning for Campus Networks',
+    title: 'Privacy-Preserving AI for Healthcare Data',
     status: 'Early exploration',
+    venue: 'Healthcare AI track',
     blurb:
-      'Privacy-preserving model training across institutional nodes without centralizing raw traffic data.',
+      'Exploring secure learning approaches that protect sensitive clinical data while supporting useful model training.',
   },
 ]
 
@@ -204,7 +180,6 @@ export const conferences: Conference[] = [
     location: 'Taipei, Taiwan',
     date: 'Nov 2025',
     year: '2025',
-    note: 'Dummy entry — replace with real talks and papers.',
   },
   {
     id: 'c2',
@@ -217,22 +192,21 @@ export const conferences: Conference[] = [
   },
   {
     id: 'c3',
+    title: 'AI Applications in Digital Health',
+    event: 'Healthcare Informatics Forum',
+    role: 'Attendee',
+    location: 'Taichung, Taiwan',
+    date: 'Jun 2025',
+    year: '2025',
+  },
+  {
+    id: 'c4',
     title: 'MERN Patterns for Production Systems',
     event: 'DevFest Peshawar',
     role: 'Speaker',
     location: 'Peshawar, Pakistan',
     date: 'Mar 2025',
     year: '2025',
-    note: 'Industry talk drawn from shipping work at K2X TECH.',
-  },
-  {
-    id: 'c4',
-    title: 'Poster: Telemetry Anomaly Scoring',
-    event: 'National Computing Colloquium',
-    role: 'Poster',
-    location: 'Islamabad, Pakistan',
-    date: 'Dec 2024',
-    year: '2024',
   },
 ]
 
@@ -244,23 +218,51 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     id: 's2',
-    label: 'Research',
-    items: ['AI / ML foundations', 'Cybersecurity concepts', 'Technical writing', 'Experiment design'],
+    label: 'Research Domains',
+    items: [
+      'Artificial Intelligence',
+      'Cybersecurity',
+      'Healthcare Technology',
+      'Secure ML',
+      'Technical writing',
+    ],
   },
   {
     id: 's3',
     label: 'Practice',
-    items: ['Agile delivery', 'Git', 'API design', 'UI implementation', 'Debugging & profiling'],
+    items: [
+      'Full-stack delivery',
+      'Git & collaboration',
+      'API design',
+      'Experiment design',
+      'Research communication',
+    ],
   },
 ]
 
-export const contact = {
+export const contact: ContactContent = {
   email: 'zain@example.com',
-  note: 'Feel free to contact me for collaboration, research, or questions.',
+  note: 'Open to research collaboration, speaking, and engineering work across AI, cybersecurity, and healthcare technology.',
   socials: [
     { label: 'CCRI', href: 'https://aicybersecuritycenter.com' },
     { label: 'LinkedIn', href: 'https://linkedin.com' },
     { label: 'GitHub', href: 'https://github.com' },
   ],
   linkedIn: 'https://linkedin.com',
+}
+
+export function getLocalPortfolio(): PortfolioData {
+  return {
+    site,
+    about,
+    contact,
+    highlights,
+    timeline,
+    projects,
+    research,
+    conferences,
+    skillGroups,
+    navLinks,
+    source: 'local',
+  }
 }

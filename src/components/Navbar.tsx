@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { navLinks, site } from '../data/content'
+import { usePortfolio } from '../context/PortfolioContext'
 
 export function Navbar() {
+  const { data } = usePortfolio()
+  const { site, navLinks } = data
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -30,7 +32,7 @@ export function Navbar() {
       <nav className="container-wide flex items-center justify-between px-[clamp(1.25rem,4vw,2.75rem)] py-4">
         <a
           href="#top"
-          className="font-display text-[1.05rem] font-semibold tracking-tight text-[var(--color-heading)]"
+          className="font-display text-[1.05rem] font-semibold tracking-tight text-[var(--color-heading)] transition-opacity hover:opacity-80"
           onClick={() => setOpen(false)}
         >
           {site.shortName}
@@ -39,23 +41,20 @@ export function Navbar() {
         <ul className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <li key={link.label}>
-              <a
-                href={link.href}
-                className="text-[0.9rem] font-medium text-[var(--color-text-soft)] transition-colors hover:text-[var(--color-heading)]"
-              >
+              <a href={link.href} className="nav-link">
                 {link.label}
               </a>
             </li>
           ))}
         </ul>
 
-        <a href="#contact" className="btn-primary hidden !py-2.5 !px-4 lg:inline-flex">
+        <a href="#contact" className="btn btn-primary btn-sm hidden lg:inline-flex">
           Contact
         </a>
 
         <button
           type="button"
-          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
+          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-md border border-transparent transition-colors hover:border-[var(--color-line)] hover:bg-white/[0.03] lg:hidden"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -85,13 +84,22 @@ export function Navbar() {
               <li key={link.label}>
                 <a
                   href={link.href}
-                  className="block py-3 text-base font-medium text-[var(--color-heading)]"
+                  className="block border-b border-[var(--color-line)] py-3.5 text-base font-medium text-[var(--color-heading)] last:border-b-0"
                   onClick={() => setOpen(false)}
                 >
                   {link.label}
                 </a>
               </li>
             ))}
+            <li className="pt-4">
+              <a
+                href="#contact"
+                className="btn btn-primary w-full"
+                onClick={() => setOpen(false)}
+              >
+                Contact
+              </a>
+            </li>
           </ul>
         </div>
       )}

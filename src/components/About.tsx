@@ -1,7 +1,9 @@
-import { about, timeline } from '../data/content'
+import { usePortfolio } from '../context/PortfolioContext'
 import { useReveal } from '../hooks/useReveal'
 
 export function About() {
+  const { data } = usePortfolio()
+  const { about, timeline } = data
   const titleRef = useReveal<HTMLHeadingElement>()
   const bodyRef = useReveal<HTMLDivElement>()
   const listRef = useReveal<HTMLUListElement>()
@@ -23,14 +25,14 @@ export function About() {
           </div>
 
           <div>
-            <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-text-faint)]">
+            <h3 className="mb-1 font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-text-faint)]">
               Experience & Education
             </h3>
             <ul ref={listRef} className="reveal reveal-delay-2 mt-4 border-t border-[var(--color-line)]">
               {timeline.map((item) => (
                 <li
                   key={item.id}
-                  className="grid gap-2 border-b border-[var(--color-line)] py-5 sm:grid-cols-[8.75rem_1fr] sm:gap-6"
+                  className="timeline-row grid gap-2 border-b border-[var(--color-line)] py-5 sm:grid-cols-[8.75rem_1fr] sm:gap-6"
                 >
                   <span className="pt-0.5 text-sm font-semibold text-[var(--color-accent)]">
                     {item.period}

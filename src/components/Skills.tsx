@@ -1,7 +1,9 @@
-import { skillGroups } from '../data/content'
+import { usePortfolio } from '../context/PortfolioContext'
 import { useReveal } from '../hooks/useReveal'
 
 export function Skills() {
+  const { data } = usePortfolio()
+  const { skillGroups } = data
   const titleRef = useReveal<HTMLHeadingElement>()
   const gridRef = useReveal<HTMLDivElement>()
 
@@ -13,15 +15,18 @@ export function Skills() {
           Skills
         </h2>
 
-        <div ref={gridRef} className="reveal reveal-delay-1 mt-11 grid gap-8 md:grid-cols-3 md:gap-10">
+        <div ref={gridRef} className="reveal reveal-delay-1 mt-11 grid gap-6 md:grid-cols-3 md:gap-5">
           {skillGroups.map((group) => (
-            <div key={group.id} className="border-t border-[var(--color-accent)]/70 pt-5">
-              <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-heading)]">
+            <div
+              key={group.id}
+              className="rounded-lg border border-[var(--color-line)] bg-[var(--color-bg)] p-5"
+            >
+              <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
                 {group.label}
               </h3>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-3">
                 {group.items.map((item) => (
-                  <li key={item} className="text-[0.95rem] text-[var(--color-text-soft)]">
+                  <li key={item} className="skill-item text-[0.95rem]">
                     {item}
                   </li>
                 ))}
