@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { ConfirmDialog, type ConfirmRequest } from '../../components/admin/ConfirmDialog'
+import { Toast, type ToastMessage } from '../../components/admin/Toast'
 import { useAuth } from '../../context/AuthContext'
 import { usePortfolio } from '../../context/PortfolioContext'
 import {
@@ -52,22 +54,61 @@ export function AdminDashboardPage() {
   const { data, refresh, loading } = usePortfolio()
   const [tab, setTab] = useState<Tab>('settings')
   const [busy, setBusy] = useState(false)
-  const [notice, setNotice] = useState('')
-  const [error, setError] = useState('')
+  const [toast, setToast] = useState<ToastMessage | null>(null)
+  const [confirm, setConfirm] = useState<ConfirmRequest | null>(null)
+
+  const dismissToast = useCallback(() => setToast(null), [])
+  const dismissConfirm = useCallback(() => {
+    if (!busy) setConfirm(null)
+  }, [busy])
+
+  function showToast(tone: ToastMessage['tone'], title: string, detail?: string) {
+    setToast({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      tone,
+      title,
+      detail,
+    })
+  }
 
   async function run(action: () => Promise<void>, success: string) {
     setBusy(true)
-    setNotice('')
-    setError('')
     try {
       await action()
       await refresh()
-      setNotice(success)
+      showToast('success', success)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      showToast('error', 'Something went wrong', err instanceof Error ? err.message : undefined)
     } finally {
       setBusy(false)
     }
+  }
+
+  function requestDelete(label: string, action: () => Promise<void>, success: string) {
+    setConfirm({
+      title: 'Delete this item?',
+      message: `“${label}” will be permanently removed from your portfolio. This can’t be undone.`,
+      confirmLabel: 'Delete',
+      onConfirm: () => {
+        void (async () => {
+          setBusy(true)
+          try {
+            await action()
+            await refresh()
+            setConfirm(null)
+            showToast('success', success)
+          } catch (err) {
+            showToast(
+              'error',
+              'Could not delete',
+              err instanceof Error ? err.message : undefined,
+            )
+          } finally {
+            setBusy(false)
+          }
+        })()
+      },
+    })
   }
 
   return (
@@ -113,21 +154,20 @@ export function AdminDashboardPage() {
           {loading ? ' · refreshing…' : ''}
         </p>
 
-        {notice && <p className="mb-4 text-sm text-[var(--color-accent)]">{notice}</p>}
-        {error && <p className="mb-4 text-sm text-red-300">{error}</p>}
-
         {tab === 'settings' && (
           <SettingsPanel
             busy={busy}
             data={data}
-            onSave={(input) => run(() => updateSiteSettings(input), 'Site settings saved.')}
+            onSave={(input) => run(() => updateSiteSettings(input), 'Site settings saved')}
           />
         )}
         {tab === 'portrait' && (
           <PortraitPanel
             busy={busy}
             portrait={data.site.portrait}
-            onUpload={(file) => run(() => uploadPortrait(file).then(() => undefined), 'Portrait updated.')}
+            onUpload={(file) =>
+              run(() => uploadPortrait(file).then(() => undefined), 'Portrait updated')
+            }
           />
         )}
         {tab === 'timeline' && (
@@ -135,9 +175,14 @@ export function AdminDashboardPage() {
             busy={busy}
             items={data.timeline}
             onSave={(item, sort_order) =>
-              run(() => upsertTimelineItem({ ...item, sort_order }), 'Timeline item saved.')
+              run(
+                () => upsertTimelineItem({ ...item, sort_order }),
+                item.id ? 'Timeline item updated' : 'Timeline item created',
+              )
             }
-            onDelete={(id) => run(() => deleteTimelineItem(id), 'Timeline item deleted.')}
+            onDelete={(id, label) =>
+              requestDelete(label, () => deleteTimelineItem(id), 'Timeline item deleted')
+            }
           />
         )}
         {tab === 'projects' && (
@@ -145,9 +190,14 @@ export function AdminDashboardPage() {
             busy={busy}
             items={data.projects}
             onSave={(item, sort_order) =>
-              run(() => upsertProject({ ...item, sort_order }), 'Project saved.')
+              run(
+                () => upsertProject({ ...item, sort_order }),
+                item.id ? 'Project updated' : 'Project created',
+              )
             }
-            onDelete={(id) => run(() => deleteProject(id), 'Project deleted.')}
+            onDelete={(id, label) =>
+              requestDelete(label, () => deleteProject(id), 'Project deleted')
+            }
           />
         )}
         {tab === 'research' && (
@@ -155,9 +205,14 @@ export function AdminDashboardPage() {
             busy={busy}
             items={data.research}
             onSave={(item, sort_order) =>
-              run(() => upsertResearchItem({ ...item, sort_order }), 'Research item saved.')
+              run(
+                () => upsertResearchItem({ ...item, sort_order }),
+                item.id ? 'Research item updated' : 'Research item created',
+              )
             }
-            onDelete={(id) => run(() => deleteResearchItem(id), 'Research item deleted.')}
+            onDelete={(id, label) =>
+              requestDelete(label, () => deleteResearchItem(id), 'Research item deleted')
+            }
           />
         )}
         {tab === 'conferences' && (
@@ -165,9 +220,14 @@ export function AdminDashboardPage() {
             busy={busy}
             items={data.conferences}
             onSave={(item, sort_order) =>
-              run(() => upsertConference({ ...item, sort_order }), 'Conference saved.')
+              run(
+                () => upsertConference({ ...item, sort_order }),
+                item.id ? 'Conference updated' : 'Conference created',
+              )
             }
-            onDelete={(id) => run(() => deleteConference(id), 'Conference deleted.')}
+            onDelete={(id, label) =>
+              requestDelete(label, () => deleteConference(id), 'Conference deleted')
+            }
           />
         )}
         {tab === 'skills' && (
@@ -175,12 +235,20 @@ export function AdminDashboardPage() {
             busy={busy}
             items={data.skillGroups}
             onSave={(item, sort_order) =>
-              run(() => upsertSkillGroup({ ...item, sort_order }), 'Skill group saved.')
+              run(
+                () => upsertSkillGroup({ ...item, sort_order }),
+                item.id ? 'Skill group updated' : 'Skill group created',
+              )
             }
-            onDelete={(id) => run(() => deleteSkillGroup(id), 'Skill group deleted.')}
+            onDelete={(id, label) =>
+              requestDelete(label, () => deleteSkillGroup(id), 'Skill group deleted')
+            }
           />
         )}
       </div>
+
+      <Toast toast={toast} onDismiss={dismissToast} />
+      <ConfirmDialog request={confirm} busy={busy} onCancel={dismissConfirm} />
     </div>
   )
 }
@@ -313,7 +381,7 @@ function TimelinePanel({
   items: TimelineItem[]
   busy: boolean
   onSave: (item: TimelineItem, sort_order: number) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string, label: string) => void
 }) {
   const blank: TimelineItem = { id: '', period: '', title: '', org: '', detail: '' }
   const [draft, setDraft] = useState<TimelineItem>(blank)
@@ -384,7 +452,7 @@ function TimelinePanel({
                 type="button"
                 className="btn btn-ghost btn-sm"
                 disabled={busy}
-                onClick={() => onDelete(item.id)}
+                onClick={() => onDelete(item.id, item.title)}
               >
                 Delete
               </button>
@@ -405,7 +473,7 @@ function ProjectsPanel({
   items: Project[]
   busy: boolean
   onSave: (item: Project, sort_order: number) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string, label: string) => void
 }) {
   const blank: Project = { id: '', title: '', role: '', stack: [], blurb: '', year: '' }
   const [draft, setDraft] = useState<Project>(blank)
@@ -504,7 +572,7 @@ function ProjectsPanel({
                 type="button"
                 className="btn btn-ghost btn-sm"
                 disabled={busy}
-                onClick={() => onDelete(item.id)}
+                onClick={() => onDelete(item.id, item.title)}
               >
                 Delete
               </button>
@@ -525,7 +593,7 @@ function ResearchPanel({
   items: ResearchItem[]
   busy: boolean
   onSave: (item: ResearchItem, sort_order: number) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string, label: string) => void
 }) {
   const blank: ResearchItem = { id: '', title: '', status: '', blurb: '' }
   const [draft, setDraft] = useState<ResearchItem>(blank)
@@ -594,7 +662,7 @@ function ResearchPanel({
                 type="button"
                 className="btn btn-ghost btn-sm"
                 disabled={busy}
-                onClick={() => onDelete(item.id)}
+                onClick={() => onDelete(item.id, item.title)}
               >
                 Delete
               </button>
@@ -615,7 +683,7 @@ function ConferencesPanel({
   items: Conference[]
   busy: boolean
   onSave: (item: Conference, sort_order: number) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string, label: string) => void
 }) {
   const blank: Conference = {
     id: '',
@@ -711,7 +779,7 @@ function ConferencesPanel({
                 type="button"
                 className="btn btn-ghost btn-sm"
                 disabled={busy}
-                onClick={() => onDelete(item.id)}
+                onClick={() => onDelete(item.id, item.event)}
               >
                 Delete
               </button>
@@ -732,7 +800,7 @@ function SkillsPanel({
   items: SkillGroup[]
   busy: boolean
   onSave: (item: SkillGroup, sort_order: number) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string, label: string) => void
 }) {
   const blank: SkillGroup = { id: '', label: '', items: [] }
   const [draft, setDraft] = useState<SkillGroup>(blank)
@@ -822,7 +890,7 @@ function SkillsPanel({
                 type="button"
                 className="btn btn-ghost btn-sm"
                 disabled={busy}
-                onClick={() => onDelete(item.id)}
+                onClick={() => onDelete(item.id, item.label)}
               >
                 Delete
               </button>
